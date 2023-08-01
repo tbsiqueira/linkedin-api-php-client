@@ -16,12 +16,15 @@
 
 namespace LinkedIn;
 
+use JsonSerializable;
+use Psr\Http\Message\ResponseInterface;
+use InvalidArgumentException;
 /**
  * Class AccessToken
  *
  * @package LinkedIn
  */
-class AccessToken implements \JsonSerializable
+class AccessToken implements JsonSerializable
 {
 
     /**
@@ -138,7 +141,7 @@ class AccessToken implements \JsonSerializable
     /**
      * Convert API response into AccessToken
      *
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      *
      * @return self
      */
@@ -159,17 +162,17 @@ class AccessToken implements \JsonSerializable
     public static function fromResponseArray($responseArray)
     {
         if (!is_array($responseArray)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Argument is not array'
             );
         }
         if (!isset($responseArray['access_token'])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Access token is not available'
             );
         }
         if (!isset($responseArray['expires_in'])) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Access token expiration date is not specified'
             );
         }
@@ -182,7 +185,7 @@ class AccessToken implements \JsonSerializable
     /**
      * Specify data format for json_encode()
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
           'token' => $this->getToken(),

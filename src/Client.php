@@ -17,9 +17,12 @@
 
 namespace LinkedIn;
 
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Utils;
+use InvalidArgumentException;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
-use function GuzzleHttp\Psr7\build_query;
+use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Uri;
 use LinkedIn\Http\Method;
 
@@ -34,12 +37,12 @@ class Client
     /**
      * Grant type
      */
-    const OAUTH2_GRANT_TYPE = 'authorization_code';
+    public const OAUTH2_GRANT_TYPE = 'authorization_code';
 
     /**
      * Response type
      */
-    const OAUTH2_RESPONSE_TYPE = 'code';
+    public const OAUTH2_RESPONSE_TYPE = 'code';
 
     /**
      * Client Id
@@ -54,7 +57,7 @@ class Client
     protected $clientSecret;
 
     /**
-     * @var \LinkedIn\AccessToken
+     * @var AccessToken
      */
     protected $accessToken;
 
@@ -75,13 +78,13 @@ class Client
      * Default authorization URL
      * string
      */
-    const OAUTH2_API_ROOT = 'https://www.linkedin.com/oauth/v2/';
+    public const OAUTH2_API_ROOT = 'https://www.linkedin.com/oauth/v2/';
 
     /**
      * Default API root URL
      * string
      */
-    const API_ROOT = 'https://api.linkedin.com/v2/';
+    public const API_ROOT = 'https://api.linkedin.com/v2/';
 
     /**
      * API Root URL
@@ -267,8 +270,8 @@ class Client
      *
      * @param string $code
      *
-     * @return \LinkedIn\AccessToken|null
-     * @throws \LinkedIn\Exception
+     * @return AccessToken|null
+     * @throws Exception
      */
     public function getAccessToken($code = '')
     {
@@ -302,13 +305,13 @@ class Client
     /**
      * Convert API response into Array
      *
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param ResponseInterface $response
      *
      * @return array
      */
     public static function responseToArray($response)
     {
-        return \GuzzleHttp\json_decode(
+        return Utils::jsonDecode(
             $response->getBody()->getContents(),
             true
         );
@@ -329,7 +332,7 @@ class Client
         if (is_object($accessToken) && $accessToken instanceof AccessToken) {
             $this->accessToken = $accessToken;
         } else {
-            throw new \InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class');
+            throw new InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class');
         }
         return $this;
     }
@@ -355,8 +358,8 @@ class Client
      */
     public function getCurrentUrl()
     {
-        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-        $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $path = $_SERVER['REQUEST_URI'] ?? '/';
         return $this->getCurrentScheme() . '://' . $host . $path;
     }
 
@@ -439,7 +442,7 @@ class Client
     {
         $redirectUrl = filter_var($redirectUrl, FILTER_VALIDATE_URL);
         if (false === $redirectUrl) {
-            throw new \InvalidArgumentException('The argument is not an URL');
+            throw new InvalidArgumentException('The argument is not an URL');
         }
         $this->redirectUrl = $redirectUrl;
         return $this;
@@ -463,7 +466,7 @@ class Client
             $scheme,
             $authority,
             $path,
-            build_query($params),
+            Query::build($params),
             $fragment
         );
         return $uri;
@@ -477,7 +480,7 @@ class Client
      * @param string $method
      *
      * @return array
-     * @throws \LinkedIn\Exception
+     * @throws Exception
      */
     public function api($endpoint, array $params = [], $method = Method::GET)
     {
@@ -494,7 +497,7 @@ class Client
             'headers' => $headers,
         ]);
         if (!empty($params) && Method::GET === $method) {
-            $endpoint .= '?' . build_query($params);
+            $endpoint .= '?' . Query::build($params);
         }
         try {
             $response = $guzzle->request($method, $endpoint, $options);
@@ -511,7 +514,7 @@ class Client
      * @param array  $params
      *
      * @return array
-     * @throws \LinkedIn\Exception
+     * @throws Exception
      */
     public function get($endpoint, array $params = [])
     {
@@ -525,7 +528,7 @@ class Client
      * @param array  $params
      *
      * @return array
-     * @throws \LinkedIn\Exception
+     * @throws Exception
      */
     public function post($endpoint, array $params = [])
     {
@@ -539,7 +542,7 @@ class Client
      * @param array  $params
      *
      * @return array
-     * @throws \LinkedIn\Exception
+     * @throws Exception
      */
     public function delete($endpoint, array $params = [])
     {
@@ -593,7 +596,7 @@ class Client
     {
         $options = [];
         if ($method === Method::POST) {
-            $options['body'] = \GuzzleHttp\json_encode($params);
+            $options['body'] = Utils::jsonEncode($params);
         }
         return $options;
     }

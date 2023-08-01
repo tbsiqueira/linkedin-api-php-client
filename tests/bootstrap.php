@@ -1,4 +1,7 @@
 <?php
+
+use Dotenv\Dotenv;
+
 /**
  * linkedin-client
  * bootstrap.php
@@ -14,9 +17,11 @@
  * @link     http://www.zoonman.com/projects/linkedin-client/
  */
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 $pathToDotEnvFile = dirname(__DIR__);
 if (file_exists($pathToDotEnvFile . '/.env')) {
-    $dotenv = new Dotenv\Dotenv($pathToDotEnvFile);
+    $dotenv = Dotenv::createUnsafeImmutable($pathToDotEnvFile);
     $dotenv->load();
 } elseif (empty(getenv('LINKEDIN_CLIENT_ID')) || empty(getenv('LINKEDIN_CLIENT_SECRET'))) {
     echo "Create .env file with credentials or setup environment variables LINKEDIN_CLIENT_ID & LINKEDIN_CLIENT_SECRET to make tests pass.";

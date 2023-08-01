@@ -14,25 +14,32 @@
  * @link     http://www.zoonman.com/projects/linkedin-client/
  */
 
-namespace LinkedIn;
+namespace LinkedIn\Tests;
+
+use Exception;
+use InvalidArgumentException;
+use StdClass;
+use PHPUnit\Framework\TestCase;
+use LinkedIn\Client;
+use LinkedIn\AccessToken;
 
 /**
  * Class ClientTest
  *
  * @package LinkedIn
  */
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
 
     /**
-     * @var \LinkedIn\Client
+     * @var Client
      */
     public $client;
 
     /**
      * Setup test environment
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new Client(
             getenv('LINKEDIN_CLIENT_ID'),
@@ -54,7 +61,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      *
      * @param $token
      * @param AccessToken|null $expectedToken
-     * @param \Exception|null $expectedException
+     * @param Exception|null $expectedException
      *
      * @dataProvider getSetAccessTokenTestTable
      */
@@ -63,7 +70,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client();
 
         if ($expectedException !== null) {
-            $this->setExpectedException(get_class($expectedException), $expectedException->getMessage());
+            $this->expectException(get_class($expectedException));
+            $this->expectExceptionMessage($expectedException->getMessage());
         }
 
         $client->setAccessToken($token);
@@ -79,7 +87,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             [
                 'token' => null,
                 'expectedToken' => null,
-                'expectedException' => new \InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class'),
+                'expectedException' => new InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class'),
             ],
 
             [
@@ -95,9 +103,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ],
 
             [
-                'token' => new \StdClass(),
+                'token' => new StdClass(),
                 'expectedToken' => null,
-                'expectedException' => new \InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class'),
+                'expectedException' => new InvalidArgumentException('$accessToken must be instance of \LinkedIn\AccessToken class'),
             ],
         ];
     }

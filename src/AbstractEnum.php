@@ -16,6 +16,8 @@
 
 namespace LinkedIn;
 
+use ReflectionClass;
+
 /**
  * Class AbstractEnum
  *
@@ -29,7 +31,7 @@ abstract class AbstractEnum
      */
     public static function getMap()
     {
-        $spl = new \ReflectionClass(get_called_class());
+        $spl = new ReflectionClass(static::class);
         return $spl->getConstants();
     }
 

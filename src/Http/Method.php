@@ -16,6 +16,7 @@
 
 namespace LinkedIn\Http;
 
+use InvalidArgumentException;
 use LinkedIn\AbstractEnum;
 
 class Method extends AbstractEnum
@@ -24,48 +25,48 @@ class Method extends AbstractEnum
     /**
      *
      */
-    const CONNECT = 'CONNECT';
+    public const CONNECT = 'CONNECT';
 
     /**
      * The GET method requests a representation of the specified resource.
      * Requests using GET should only retrieve data.
      */
-    const GET = 'GET';
+    public const GET = 'GET';
 
     /**
      *
      */
-    const HEAD = 'HEAD';
+    public const HEAD = 'HEAD';
 
     /**
      *
      */
-    const POST = 'POST';
+    public const POST = 'POST';
 
     /**
      *
      */
-    const PUT = 'PUT';
+    public const PUT = 'PUT';
 
     /**
      *
      */
-    const PATCH = 'PATCH';
+    public const PATCH = 'PATCH';
 
     /**
      *
      */
-    const OPTIONS = 'OPTIONS';
+    public const OPTIONS = 'OPTIONS';
 
     /**
      *
      */
-    const DELETE = 'DELETE';
+    public const DELETE = 'DELETE';
 
     /**
      *
      */
-    const TRACE = 'TRACE';
+    public const TRACE = 'TRACE';
 
     /**
      * @param $method
@@ -73,7 +74,7 @@ class Method extends AbstractEnum
     public static function isMethodSupported($method)
     {
         if (!in_array($method, [Method::GET, Method::POST, Method::DELETE])) {
-            throw new \InvalidArgumentException('The method is not correct');
+            throw new InvalidArgumentException('The method is not correct');
         }
     }
 }
